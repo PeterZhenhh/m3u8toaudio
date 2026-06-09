@@ -25,4 +25,4 @@ CMD ["deno", "run", \
      "--allow-write", \
      "--allow-run", \
      "--allow-env", \
-     "server.ts"]
+     "main.ts"]
