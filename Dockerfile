@@ -1,24 +1,35 @@
-FROM denoland/deno:2.4.3
+FROM node:20-slim
 
-RUN apt-get update && \
-    apt-get install -y ffmpeg && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# =========================
+# 安装 ffmpeg + ffprobe
+# =========================
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
 
+# =========================
+# 创建工作目录
+# =========================
 WORKDIR /app
 
+# =========================
+# 复制依赖文件
+# =========================
 COPY package*.json ./
 
-RUN deno install
+RUN npm install --production
 
+# =========================
+# 复制源码
+# =========================
 COPY . .
 
-RUN mkdir -p cache tmp
+# =========================
+# 暴露端口
+# =========================
+EXPOSE 3000
 
-ENV PORT=8000
-
-EXPOSE 8000
-
-CMD ["deno", "run", \
-     "-A", \
-     "main.ts"]
+# =========================
+# 启动服务
+# =========================
+CMD ["node", "main.ts"]
