@@ -7,6 +7,10 @@ RUN apt-get update && \
 
 WORKDIR /app
 
+COPY package*.json ./
+
+RUN deno install
+
 COPY . .
 
 RUN mkdir -p cache tmp
@@ -21,4 +25,4 @@ CMD ["deno", "run", \
      "--allow-write", \
      "--allow-run", \
      "--allow-env", \
-     "main.ts"]
+     "server.ts"]
