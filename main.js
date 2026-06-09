@@ -3,6 +3,7 @@ import ffmpeg from "fluent-ffmpeg";
 import { execFileSync } from "child_process";
 
 const app = express();
+const durationCache = new Map();
 
 // ======================
 // WAV 参数（关键）
@@ -57,7 +58,11 @@ app.get("/audio", async (req, res) => {
   const startByte = parseRange(rangeHeader);
   const startTime = bytesToTime(startByte);
 
-  const duration = getDuration(url);
+  let duration = durationCache.get(url);
+  if (!duration) {
+    duration = getDuration(url);
+    durationCache.set(url, duration);
+  }
   const totalBytes = duration * BYTES_PER_SEC;
 
   console.log({
