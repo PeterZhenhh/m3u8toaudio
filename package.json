@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@renmu/m3u8-downloader": "^0.5.2"
+  },
+  "scripts": {
+    "dev": "deno run --allow-net --allow-read --allow-write --allow-run main.ts"
+  }
+}
