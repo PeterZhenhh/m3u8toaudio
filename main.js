@@ -83,24 +83,35 @@ app.get("/audio", async (req, res) => {
   res.setHeader(
     "Content-Range",
     // `bytes ${startByte}-${endByte}/${Math.floor(totalBytes)}`
-    `bytes ${startByte}-${Math.floor(totalBytes)-1}/${Math.floor(totalBytes)}`
+    `bytes ${startByte}-${Math.floor(totalBytes) - 1}/${Math.floor(totalBytes)}`
   );
 
   // ======================
   // FFmpeg WAV输出
   // ======================
-  ffmpeg(url)
-    .format("wav")
-    .audioCodec("pcm_s16le")
-    .audioFrequency(SAMPLE_RATE)
-    .audioChannels(CHANNELS)
-    .seekInput(startTime)
-    .on("start", cmd => console.log(cmd))
-    .on("error", err => {
-      console.error(err);
-      res.end();
-    })
-    .pipe(res, { end: true });
+  if (startByte == 0) {
+    ffmpeg(url)
+      .format("wav")
+      .audioCodec("pcm_s16le")
+      .audioFrequency(SAMPLE_RATE)
+      .audioChannels(CHANNELS)
+      .seekInput(startTime)
+      .on("start", cmd => console.log(cmd))
+      .on("error", err => {
+        res.end();
+      })
+      .pipe(res, { end: true });
+  } else {
+    ffmpeg(url)
+      .format("s16le")
+      .audioFrequency(SAMPLE_RATE)
+      .audioChannels(CHANNELS)
+      .seekInput(startTime)
+      .on("error", err => {
+        res.end();
+      })
+      .pipe(res, { end: true })
+  }
 });
 
 // ======================
