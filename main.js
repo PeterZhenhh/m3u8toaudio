@@ -1,6 +1,7 @@
 import express from "express";
 import ffmpeg from "fluent-ffmpeg";
 import { execFileSync } from "child_process";
+import { Parser } from "m3u8-parser";
 
 const app = express();
 const durationCache = new Map();
@@ -89,13 +90,34 @@ app.get("/audio", async (req, res) => {
   // ======================
   // FFmpeg WAV输出
   // ======================
+  const parser = new Parser();
+  const m3u8Text = await (await fetch(url)).text()
+  parser.push(m3u8Text);
+  parser.end();
+  const manifest = parser.manifest
+  const segments = manifest.segments
+
+  let startSeek = 0
+  let offsetSeek = 0
+
+  for (let idx = 0; idx < segments.length; idx++) {
+    const seg = segments[idx];
+    if (startSeek + seg.duration > startTime) {
+      break
+    }
+    startSeek += seg.duration
+  }
+  startSeek += 0.001
+  offsetSeek = startTime - startSeek
+  
   if (startByte == 0) {
     ffmpeg(url)
+      .inputOptions(["-accurate_seek"])
+      .seekInput(startTime)
       .format("wav")
       .audioCodec("pcm_s16le")
       .audioFrequency(SAMPLE_RATE)
       .audioChannels(CHANNELS)
-      .seekInput(startTime)
       .on("start", cmd => console.log(cmd))
       .on("error", err => {
         res.end();
@@ -103,10 +125,14 @@ app.get("/audio", async (req, res) => {
       .pipe(res, { end: true });
   } else {
     ffmpeg(url)
+      .inputOptions(["-accurate_seek"])
+      .seekInput(startSeek)
+      .seek(offsetSeek)
+      // .format("wav")
       .format("s16le")
       .audioFrequency(SAMPLE_RATE)
       .audioChannels(CHANNELS)
-      .seekInput(startTime)
+      .on("start", cmd => console.log(cmd))
       .on("error", err => {
         res.end();
       })
