@@ -82,7 +82,8 @@ app.get("/audio", async (req, res) => {
 
   res.setHeader(
     "Content-Range",
-    `bytes ${startByte}-${endByte}/${Math.floor(totalBytes)}`
+    // `bytes ${startByte}-${endByte}/${Math.floor(totalBytes)}`
+    `bytes ${startByte}-${Math.floor(totalBytes)-1}/${Math.floor(totalBytes)}`
   );
 
   // ======================

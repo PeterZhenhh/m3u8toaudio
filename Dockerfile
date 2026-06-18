@@ -23,7 +23,6 @@ RUN npm install --production
 # 复制源码
 # =========================
 COPY . .
-COPY --from=denoland/deno:bin /deno /usr/local/bin/deno
 
 # =========================
 # 暴露端口
@@ -33,5 +32,4 @@ EXPOSE 3000
 # =========================
 # 启动服务
 # =========================
-# CMD ["node", "main.js"]
-CMD ["deno", "run", "-A", "d.ts"]
+CMD ["node", "main.js"]
