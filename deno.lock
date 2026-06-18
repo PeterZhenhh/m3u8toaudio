@@ -75,7 +75,10 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
-        "npm:@renmu/m3u8-downloader@~0.5.2"
+        "npm:cors@^2.8.6",
+        "npm:deno@^2.7.11",
+        "npm:express@^5.2.1",
+        "npm:fluent-ffmpeg@^2.1.3"
       ]
     }
   }
